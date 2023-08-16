@@ -40,7 +40,7 @@ func main(){
 	// }
 	// services.InsertproductList(products)
 
-	products,_ :=services.FindProducts()
+	products,_ :=services.FindRes()
 	for _,product :=range products{
 		fmt.Println(product)
 	}

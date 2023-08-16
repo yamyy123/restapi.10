@@ -5,13 +5,13 @@ import(
 	 "time"
 )
 
-type Restaurant struct {
+type Res struct {
     ID           primitive.ObjectID `json:"id" bson:"_id"`
     Address      Address            `json:"address" bson:"address,required"`
     Borough      string             `json:"borough",bson:"borough,omitempty"`
     Cuisine      string             `json:"cuisine",bson:"cuisine,omitempty"`
     Grades       []Grade            `json:"grades" bson:"grade,required"`
-    Name         string             `json:"name" bson:"Name,required"`
+    Name         string             `json:"name" bson:"name,required"`
     RestaurantID string             `json:"restaurant_id" bson:"RestaurantID,required"`
 }
 

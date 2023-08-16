@@ -1,81 +1,48 @@
 package services
 
 import (
-	"context"
-	"fmt"
-	"mongodb/config"
-	"mongodb/models"
-	"time"
+    "context"
+    "fmt"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+    // "log"
+    "mongodb/config"
+    "mongodb/models"
+    "time"
+
+    "go.mongodb.org/mongo-driver/bson"
+    "go.mongodb.org/mongo-driver/mongo"
+    "go.mongodb.org/mongo-driver/mongo/options"
+    // "go.mongodb.org/mongo-driver/mongo"
+    // "go.mongodb.org/mongo-driver/mongo/options"
 )
-
-func ProductContext() *mongo.Collection{
-	client,_:= config.ConnectDataBase()
-	return config.GetCollection(client, "sample_restaurants","restaurants")
-	//return config.GetCollection( "inventory","products")
+func ProductCont() *mongo.Collection{
+    client,_:=config.ConnectDataBase()
+    return config.GetCollection(client,"sample_restaurants","restaurants")
+    
 }
+func FindRes() ([]*models.Res, error) {
+    ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+    filter := bson.D{}
+    result, err := ProductCont().Find(ctx, filter, options.Find().SetLimit(10))
+    if err != nil {
+        fmt.Println(err.Error())
+        return nil, err
+    } else {
+        var rest []*models.Res
+        for result.Next(ctx) {
+            post := &models.Res{}
+            err := result.Decode(post)
+            if err != nil {
+                return nil, err
+            }
 
-func InsertProduct(product models.Product) (*mongo.InsertOneResult,error){
-	//var product models.Product
-	//product.Name="iphone"
-   //	product.Price=115000
-   // product.Description="It is an awesome phone"
-	ctx,_:= context.WithTimeout(context.Background(),10*time.Second)
-	//client,_:=config.ConnectDataBase()
-	//var productCollection *mongo.Collection = config.GetCollection(client,"inventory","products")
-	//result,err := productCollection.InsertOne(ctx,product)
-	result,err :=ProductContext().InsertOne(ctx,product)
-	if err !=nil{
-		fmt.Println(err)
-	}
-	fmt.Println(result)
-	return result, nil
+            rest = append(rest, post)
+        }
+        if err := result.Err(); err != nil {
+            return nil, err
+        }
+        return rest, nil
+    }
+
 }
-
-func InsertproductList(products []interface{})(*mongo.InsertManyResult,error){
-	ctx,_:=context.WithTimeout(context.Background(),10*time.Second)
-	result,err:= ProductContext().InsertMany(ctx,products)
-	if err !=nil{
-		fmt.Println(err)
-	}
-	fmt.Println(result)
-	return result, nil
-}
-
-func FindProducts()([]*models.Restaurant,error){
-	ctx,_ := context.WithTimeout(context.Background(),10*time.Second)
-	filter :=bson.D{}//covert into mongodb understandable code
-	limit:= options.Find().SetLimit(10)
-	result,err := ProductContext().Find(ctx,filter,limit)//fetch all the products
-	if err !=nil{
-		fmt.Println(err.Error())
-		return nil,err
-	}
-		//fmt.Println(result)
-		//build the array of products for the cursor that we received
-		var products []*models.Restaurant
-		for result.Next(ctx){
-			product :=&models.Restaurant{}
-			err:=result.Decode(product)
-            if err!=nil{
-				return nil,err
-			}
-			products=append(products,product)
-		}
-		if err :=result.Err();err !=nil{
-			return nil,err
-		}
-		if len(products) ==0{
-           return []*models.Restaurant{},nil
-		}
-		//return products,nil
-	
-	return products,nil
-}
-
-
-
 

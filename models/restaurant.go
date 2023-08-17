@@ -3,6 +3,7 @@ package models
 import(
 	 "go.mongodb.org/mongo-driver/bson/primitive"
 	 "time"
+     //here we are exporting a package named mongo db primitive name to get id and date
 )
 
 type Res struct {

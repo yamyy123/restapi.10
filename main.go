@@ -40,8 +40,15 @@ func main(){
 	// }
 	// services.InsertproductList(products)
 
-	products,_ :=services.FindRes()
-	for _,product :=range products{
-		fmt.Println(product)
-	}
+	// products,_ :=services.FetchTransactions()
+	// for _,product :=range products{
+	// 	fmt.Println(product)
+	// 	fmt.Println()
+	// }
+	// transaction, _ := transactions.FetchAggregatedTransactions()
+    // for _, transactions := range transaction {
+    //   fmt.Println(transactions)
+    // }
+	result, _ := transactions.Update(443718, 454545)
+    fmt.Println(result.ModifiedCount)
 }
